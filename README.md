@@ -120,6 +120,9 @@ cd mseg-semantic && pip install -r requirements.txt
 pip install -e .
 cd ..
 ```
+  
+**Note**: We now assume that the current working directory is `CamRaDepth/externals/mseg-semantic`
+  
 change line 23 of file 'mseg-semantic/mseg_semantic/utils/img_path_utils.py' to:
 
 ```bash
@@ -128,13 +131,12 @@ suffix_fpaths = glob.glob(f"{jpg_dir}/*_im.{suffix}")
 
 Run inference with the correct data source directory
 ```bash
-cd external/mseg/mseg-semantic
 CONFIG_PATH="mseg_semantic/config/test/default_config_360_ms.yaml"
 
 python -u mseg_semantic/tool/universal_demo.py \
   --config="$CONFIG_PATH" \
   model_name mseg-3m \
-  model_path ../mseg-3m.pth input_file ../../../../nuscenes_mini/prepared_data/
+  model_path mseg-3m.pth input_file ../../../nuscenes_mini/prepared_data/
 ```
 
 Change and combine the labels for the right format
@@ -149,7 +151,7 @@ python scripts/vehicle_seg.py
 
 Download pretrained weights:
 ```bash
-mkdir CamRaDepth/checkpoints && cd CamRaDepth/checkpoints
+mkdir src/checkpoints && cd src/checkpoints
 wget  https://syncandshare.lrz.de/dl/fi17pZyWBpZf38uxQ5XcS3/checkpoints.zip
 unzip checkpoints.zip -d ..
 ```
@@ -201,17 +203,17 @@ unzip checkpoints.zip -d ..
 **Note:** Training does only make sence with the full dataset as the mini does not provide enough data for meaningful training.
 
 ```bash
-python main/runner.py --run_mode train --model base --save_model --batch_size 2 --desired_batch_size 6 --num_steps 60000 --run_name 'base_batch(2-6)' --split <created_split_for_the_full_dataset.npy>
+python src/main/runner.py --run_mode train --model base --save_model --batch_size 2 --desired_batch_size 6 --num_steps 60000 --run_name 'base_batch(2-6)' --split <created_split_for_the_full_dataset.npy>
 ```
 
 ### Evaluation (inference) Example Command
 **With Full nuScenes Dataset:**
 ```bash
-python main/runner.py --run_mode test --checkpoint checkpoints/Base_TL.pth --model base
+python src/main/runner.py --run_mode test --checkpoint checkpoints/Base_TL.pth --model base
 ```
 **With nuScenes Mini:**
 ```bash
-python main/runner.py --run_mode test --checkpoint checkpoints/Base_TL.pth --model base --split <your_mini_split_path> --mini_dataset
+python src/main/runner.py --run_mode test --checkpoint checkpoints/Base_TL.pth --model base --split <your_mini_split_path> --mini_dataset
 ```
 
 **Note:** the `mini_dataset` argument is a must for the mini split, as the dataloader will take the entire split is a test set.
